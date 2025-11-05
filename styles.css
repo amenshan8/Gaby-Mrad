@@ -1,0 +1,335 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    --bg:#0b0b0b;
+    --card:#0f1113;
+    --muted:#bdbdbd;
+    --gold:#caa93e;
+    --accent:#d4b84a;
+    --card-border: rgba(255,255,255,0.04);
+}
+
+body {
+    font-family: "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Cal Sans", sans-serif;
+    background: var(--bg);
+    color: #f5f5f5;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* RTL Support */
+body[dir="rtl"] {
+    direction: rtl;
+}
+
+/* Language Switcher (kept minimal) */
+.language-switcher {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 1000;
+}
+
+.lang-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    color: #fff;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+/* Container */
+.container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: transparent;
+}
+
+/* Profile Section */
+.profile-section {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.name {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+    line-height: 1.1;
+    letter-spacing: 0.3px;
+}
+
+.title {
+    font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+    font-weight: 400;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    opacity: 0.95;
+    line-height: 1.3;
+}
+
+.tagline {
+    font-size: clamp(0.7rem, 2.2vw, 0.85rem);
+    color: #d6c68b;
+    font-style: italic;
+    opacity: 0.95;
+}
+
+/* Links Section */
+.links-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+/* Section labels */
+.section-label {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.9);
+    margin: 0 0 0.6rem 0;
+    text-align: left;
+    font-weight: 600;
+}
+
+/* Glow accents for social icons */
+.contact-btn {
+    position: relative;
+}
+
+/* create a soft colored glow behind the icon */
+.contact-btn i {
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 0 transparent;
+}
+
+/* specific platform glows */
+.whatsapp-btn i { box-shadow: 0 6px 24px rgba(37,211,102,0.18); }
+.instagram-btn i { box-shadow: 0 6px 28px rgba(225,48,108,0.18), 0 3px 14px rgba(131,58,180,0.08); }
+.twitter-btn i { box-shadow: 0 6px 24px rgba(29,161,242,0.14); }
+.linkedin-btn i { box-shadow: 0 6px 24px rgba(10,102,194,0.12); }
+.phone-btn i { box-shadow: 0 6px 20px rgba(158,214,195,0.08); }
+.email-btn i { box-shadow: 0 6px 20px rgba(255,138,128,0.10); }
+.tiktok-btn i { box-shadow: 0 6px 28px rgba(255,255,255,0.06), 0 6px 18px rgba(0,0,0,0.35); }
+.portfolio-btn i, .project-card i { box-shadow: 0 6px 20px rgba(202,169,62,0.12); }
+
+/* slightly stronger glow on hover */
+.contact-btn:hover i {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 10px 28px rgba(0,0,0,0.5));
+}
+
+/* ensure section headings align in RTL too */
+body[dir="rtl"] .section-label { text-align: right; }
+
+/* Contact buttons - dark cards with gold accents */
+.contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid var(--card-border);
+    color: #fff;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    position: relative;
+    overflow: hidden;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+}
+
+/* text overflow handling */
+.contact-btn span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+}
+
+/* subtle hover effect */
+.contact-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.7);
+    border-color: rgba(214,184,74,0.14);
+}
+
+/* Project card info layout */
+.contact-btn.project-card .project-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    margin-left: 0.75rem;
+    gap: 0.08rem;
+}
+
+.project-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+}
+
+.project-desc {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 400;
+}
+
+/* Hover color accent for titles */
+.contact-btn.project-card:hover .project-title {
+    color: var(--gold);
+}
+
+/* Brand specific icon colors (tint) */
+.phone-btn i { color: #9ed6c3; }
+.whatsapp-btn i { color: #25d366; }
+.email-btn i { color: #ff8a80; }
+.instagram-btn i { color: #ff7ab6; }
+.twitter-btn i { color: #7ad0ff; }
+.linkedin-btn i { color: #4aa3d9; }
+.tiktok-btn i { color: #fff; }
+
+/* vCard Section */
+.vcard-section {
+    text-align: center;
+}
+
+.vcard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem 1.6rem;
+    background: linear-gradient(90deg, var(--gold), #b68f24);
+    border: none;
+    border-radius: 40px;
+    color: #0b0b0b;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 0.16s ease, box-shadow 0.16s ease;
+    box-shadow: 0 6px 20px rgba(200,160,60,0.15);
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+.vcard-btn i { color: #0b0b0b; }
+
+.vcard-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(200,160,60,0.22);
+}
+
+/* small adjustments */
+.contact-btn .project-info { min-width: 0; }
+.contact-btn .project-title, .contact-btn span { word-break: break-word; }
+
+/* Responsive tweaks */
+@media (max-width: 480px) {
+    .contact-btn {
+        padding: 0.9rem 0.9rem;
+        margin: 0 0.4rem;
+    }
+
+    .project-info { margin-left: 0.5rem; }
+}
+
+/* RTL adjustments */
+body[dir="rtl"] .contact-btn.project-card .project-info {
+    margin-left: 0;
+    margin-right: 0.75rem;
+    align-items: flex-end;
+}
+
+/* Contact preview modal */
+.contact-preview {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    z-index: 2000;
+    padding: 1.25rem;
+}
+
+.contact-preview[aria-hidden="false"] {
+    display: flex;
+}
+
+.contact-preview-inner {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    padding: 1rem;
+    border-radius: 12px;
+    max-width: 520px;
+    width: 100%;
+    color: #fff;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+
+.close-preview {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.25rem;
+    position: absolute;
+    right: 1.5rem;
+    top: 1.25rem;
+    cursor: pointer;
+}
+
+.contact-pretext {
+    background: rgba(255,255,255,0.02);
+    padding: 0.75rem;
+    border-radius: 8px;
+    max-height: 260px;
+    overflow: auto;
+    font-family: "Space Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+    margin: 0.6rem 0 1rem 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.95rem;
+    color: #f5f5f5;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: flex-end;
+}
+
+/* small tweak for preview action buttons */
+.preview-download, .preview-close {
+    padding: 0.65rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--gold), #b68f24);
+    color: #0b0b0b;
+    border: none;
+    cursor: pointer;
+}
+
+.preview-close { background: rgba(255,255,255,0.04); color: #fff; }
