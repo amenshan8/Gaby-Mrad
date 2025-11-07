@@ -2,16 +2,25 @@
 
 // Generate vCard file dynamically with new details
 function buildVCardText() {
+    // include structured vCard with full URLs and notes for social links so mobile contact importers get all info
     return `BEGIN:VCARD
- VERSION:3.0
- FN:Gaby Mrad
- ORG:Arabnights
- TITLE:Host / Radio Producer
- TEL:+31644219300
- EMAIL:gaby.mrad@outlook.com
- URL:https://www.thearabnights.com/
- NOTE:Arabnights - Radio, shows & media
- END:VCARD`;
+VERSION:3.0
+FN:Gaby Mrad
+ORG:Arabnights
+TITLE:DJ; Digital Distribution; Microsoft BI Consultant
+TEL;TYPE=WORK,VOICE:+31644219300
+EMAIL;TYPE=INTERNET:gaby.mrad@outlook.com
+URL:https://www.thearabnights.com/
+NOTE:Instagram: https://www.instagram.com/gaby.mrad
+NOTE:X: https://twitter.com/gabymrad
+NOTE:LinkedIn: https://www.linkedin.com/in/gabymrad
+NOTE:Anghami: https://open.anghami.com/uPY3w0T1XXb
+NOTE:YouTube: https://youtube.com/@thearabnights
+NOTE:Business Channel: https://www.thearabnights.com/channel
+NOTE:TikTok: https://www.tiktok.com/@thearabnight
+NOTE:Radio (OnlineRadioBox): https://onlineradiobox.com/nl/arabnights/
+NOTE:Radio (tun.in): http://tun.in/se6UY
+END:VCARD`;
 }
 
 let vcardUrl = null;
@@ -88,33 +97,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const vcardText = generateVCard();
 
             if (isMobileDevice()) {
-                // On many mobile devices, navigating to a .vcf will prompt adding to contacts.
-                // We programmatically open the blob link to trigger the native handler, and also show a preview.
                 e.preventDefault();
 
-                // open the vcard in a new tab/window to trigger platform behavior
+                // open the vcard blob directly to trigger native "Add to contacts" on mobile
                 try {
                     const win = window.open(vcardUrl, '_blank');
-                    if (!win) {
-                        // fallback: set location
-                        window.location.href = vcardUrl;
-                    }
+                    if (!win) window.location.href = vcardUrl;
                 } catch (err) {
                     window.location.href = vcardUrl;
                 }
 
-                // show preview so the user sees details and can re-download if needed
+                // also show preview for clarity
                 openPreview(vcardText);
             } else {
-                // Desktop: allow normal download but also show preview optionally (no auto-save)
-                // Let the anchor behave as a direct download; also set preview content but don't auto-open.
-                // show preview on ctrl/cmd click or after a short delay
+                // Desktop: keep download behavior and show preview when ctrl/cmd pressed
                 if (e.ctrlKey || e.metaKey) {
                     e.preventDefault();
                     openPreview(vcardText);
                 } else {
-                    // allow default anchor download behavior
-                    // ensure href is up-to-date
                     this.href = vcardUrl;
                 }
             }
