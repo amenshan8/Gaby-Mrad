@@ -1,30 +1,60 @@
 // Simplified script: remove matrix background, remove language/timecode/battery logic, keep vCard generation and lightweight interactions
 
-// Generate vCard file dynamically with new details
+// Build a more complete vCard (VERSION:3.0) with structured fields and social links.
+// Mobile platforms (iOS/Android) will typically open the contact import when a .vcf is navigated to or opened.
+// Desktop will receive a downloadable .vcf file.
 function buildVCardText() {
-    // include structured vCard with full URLs and notes for social links so mobile contact importers get all info
-    return `BEGIN:VCARD
-VERSION:3.0
-FN:Gaby Mrad
-ORG:Arabnights
-TITLE:DJ; Digital Distribution; Microsoft BI Consultant
-TEL;TYPE=WORK,VOICE:+31644219300
-EMAIL;TYPE=INTERNET:gaby.mrad@outlook.com
-URL:https://www.thearabnights.com/
-NOTE:Instagram: https://www.instagram.com/gaby.mrad
-NOTE:X: https://twitter.com/gabymrad
-NOTE:LinkedIn: https://www.linkedin.com/in/gabymrad
-NOTE:Anghami: https://open.anghami.com/uPY3w0T1XXb
-NOTE:YouTube: https://youtube.com/@thearabnights
-NOTE:Business Channel: https://www.thearabnights.com/channel
-NOTE:TikTok: https://www.tiktok.com/@thearabnight
-NOTE:Radio (OnlineRadioBox): https://onlineradiobox.com/nl/arabnights/
-NOTE:Radio (tun.in): http://tun.in/se6UY
-END:VCARD`;
+    // Use structured fields: N; FN; ORG; TITLE; TEL; EMAIL; URL; NOTE; X-SOCIALPROFILE style lines
+    const fullName = "Gaby Mrad";
+    const org = "Arabnights";
+    const title = "DJ; Digital Distribution; Microsoft BI Consultant";
+    const phone = "+31644219300";
+    const email = "gaby.mrad@outlook.com";
+    const website = "https://www.thearabnights.com/";
+    const instagram = "https://www.instagram.com/gaby.mrad";
+    const xProfile = "https://twitter.com/gabymrad";
+    const linkedin = "https://www.linkedin.com/in/gabymrad";
+    const anghami = "https://open.anghami.com/uPY3w0T1XXb";
+    const youtube = "https://youtube.com/@thearabnights";
+    const businessChannel = "https://www.thearabnights.com/channel";
+    const tiktok = "https://www.tiktok.com/@thearabnights";
+    const radio1 = "https://onlineradiobox.com/nl/arabnights/";
+    const radio2 = "http://tun.in/se6UY";
+
+    // Build vCard lines. Use multiple FN, N, TITLE, ORG, TEL, EMAIL, URL and NOTE fields.
+    // For broad compatibility, include social links in NOTE and as X-SOCIALPROFILE where reasonable.
+    const lines = [
+        "BEGIN:VCARD",
+        "VERSION:3.0",
+        // N: Family; Given ; Additional ; Prefix ; Suffix — we don't have family/given split, so put full name in FN below
+        `FN:${fullName}`,
+        `N:${fullName};;;;`,
+        `ORG:${org}`,
+        `TITLE:${title}`,
+        `TEL;TYPE=CELL,VOICE:${phone}`,
+        `EMAIL;TYPE=INTERNET:${email}`,
+        `URL:${website}`,
+        // Add social links as both NOTE and X-SOCIALPROFILE for compatibility
+        `NOTE:Instagram: ${instagram} \\nX: ${xProfile} \\nLinkedIn: ${linkedin} \\nAnghami: ${anghami} \\nYouTube: ${youtube} \\nBusiness Channel: ${businessChannel} \\nTikTok: ${tiktok} \\nRadio1: ${radio1} \\nRadio2: ${radio2}`,
+        `X-SOCIALPROFILE;type=instagram:${instagram}`,
+        `X-SOCIALPROFILE;type=twitter:${xProfile}`,
+        `X-SOCIALPROFILE;type=linkedin:${linkedin}`,
+        `X-SOCIALPROFILE;type=anghami:${anghami}`,
+        `X-SOCIALPROFILE;type=youtube:${youtube}`,
+        `X-SOCIALPROFILE;type=tiktok:${tiktok}`,
+        // Provide source/notes about business
+        `X-ABLABEL:Business`,
+        `X-ABADR:;;`,
+        `X-ABUID:arabnights`,
+        "END:VCARD"
+    ];
+
+    return lines.join("\r\n");
 }
 
 let vcardUrl = null;
 
+// Create or refresh vCard blob URL and update links that reference it.
 function generateVCard() {
     // revoke previous
     if (vcardUrl) {
@@ -33,6 +63,7 @@ function generateVCard() {
     }
 
     const vcard = buildVCardText();
+    // Use the standard MIME type for vCard. Some platforms prefer text/x-vcard or text/vcard.
     const blob = new Blob([vcard], { type: 'text/vcard' });
     vcardUrl = URL.createObjectURL(blob);
 
@@ -45,7 +76,7 @@ function generateVCard() {
 }
 
 function isMobileDevice() {
-    // Basic mobile detection: small screen or touch-capable
+    // Basic mobile detection: touch-capable device and narrow viewport
     return ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.matchMedia('(max-width: 900px)').matches;
 }
 
@@ -97,26 +128,43 @@ document.addEventListener('DOMContentLoaded', () => {
             const vcardText = generateVCard();
 
             if (isMobileDevice()) {
+                // On mobile: open the vCard URL directly to trigger native "Add to Contact" flow.
+                // Use navigation instead of download to encourage the OS to import the vCard.
                 e.preventDefault();
 
-                // open the vcard blob directly to trigger native "Add to contacts" on mobile
+                // For maximum compatibility:
+                // 1) Try to open via window.location (same tab) which often triggers import.
+                // 2) Fallback: open in a new tab/window.
                 try {
-                    const win = window.open(vcardUrl, '_blank');
-                    if (!win) window.location.href = vcardUrl;
-                } catch (err) {
+                    // Some browsers block window.open from click handlers if popup blocked; prefer location change first.
                     window.location.href = vcardUrl;
+                } catch (err) {
+                    try {
+                        const win = window.open(vcardUrl, '_blank');
+                        if (!win) window.location.href = vcardUrl;
+                    } catch (err2) {
+                        window.location.href = vcardUrl;
+                    }
                 }
 
-                // also show preview for clarity
+                // Show a preview overlay so user sees what's being saved (non-blocking)
                 openPreview(vcardText);
             } else {
-                // Desktop: keep download behavior and show preview when ctrl/cmd pressed
+                // Desktop: maintain download behavior.
+                // Ensure the link has download attribute (so browsers download instead of navigate)
+                // Allow modifier keys to open preview instead if Ctrl/Cmd pressed.
                 if (e.ctrlKey || e.metaKey) {
                     e.preventDefault();
                     openPreview(vcardText);
-                } else {
-                    this.href = vcardUrl;
+                    return;
                 }
+                // Set href to blob url and let default click proceed to download (button markup already has download attribute)
+                this.href = vcardUrl;
+                // ensure the download attribute exists (in case it's missing)
+                if (!this.hasAttribute('download')) {
+                    this.setAttribute('download', 'Arabnights-Contact.vcf');
+                }
+                // No preventDefault so browser performs the download.
             }
         });
     }
